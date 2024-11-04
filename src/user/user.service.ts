@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
+import { BadRequestException, Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdatePasswordDto } from './dtos/update-password.dto';
+import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -11,8 +11,11 @@ export class UserService {
     return this.users;
   }
 
-  findOne(id: string) {console.log('here')
+  findOne(id: string) {
+    if (!uuidValidate(id)) throw new BadRequestException('User id is invalid'); 
+    
     const user = this.users.find(user => user.id === id);
+    if (!user) throw new NotFoundException('User not found!');
     return user;
   }
 
@@ -30,16 +33,22 @@ export class UserService {
   }
 
   update(id: string, updatedUser: UpdatePasswordDto) {
+    if (!uuidValidate(id)) throw new BadRequestException('User id is invalid'); 
     const user = this.findOne(id);
-    
+    if (!user) throw new NotFoundException('User not found!');
+
     this.users = this.users.map(user => {
-      if (user.id === id && user.password === updatedUser.oldPassword) {
-        const newVersion = user.version + 1;
-        return { 
-          ...user,
-          version: newVersion, 
-          password: updatedUser.newPassword,
-          updatedAt: Date.now() };
+      if (user.id === id) {
+        if (user.password === updatedUser.oldPassword) {
+          const newVersion = user.version + 1;
+          return { 
+            ...user,
+            version: newVersion, 
+            password: updatedUser.newPassword,
+            updatedAt: Date.now() };
+        } else {
+          throw new ForbiddenException('Old password is wrong!');
+        }
       }
       return user;
     });
@@ -47,8 +56,10 @@ export class UserService {
   }
 
   delete(id: string) {
+    if (!uuidValidate(id)) throw new BadRequestException('User id is invalid'); 
     const userToRemove = this.findOne(id);
+    if (!userToRemove) throw new NotFoundException('User not found!');
+
     this.users = this.users.filter(user => user.id !== userToRemove.id);
-    return 'ok';
   }
 }

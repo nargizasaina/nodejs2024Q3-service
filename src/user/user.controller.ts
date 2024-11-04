@@ -1,5 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, ValidationPipe } from '@nestjs/common';
-import { isValidId } from 'src/utils';
+import { Body, Controller, Delete, Get, Param, Post, Put, ValidationPipe, HttpCode } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdatePasswordDto } from './dtos/update-password.dto';
@@ -15,9 +14,6 @@ export class UserController {
 
   @Get(':id') 
   findOne(@Param('id') id:string) {
-    if (!isValidId(id)) {
-      return 'User id is invalid';
-    }
     return this.userService.findOne(id);
   }
 
@@ -28,17 +24,12 @@ export class UserController {
 
   @Put(':id') 
   update(@Param('id') id:string, @Body(ValidationPipe) userUpdate: UpdatePasswordDto) {
-    if (!isValidId(id)) {
-      return 'User id is invalid';
-    }
     return this.userService.update( id, userUpdate );
   }
 
   @Delete(':id') 
+  @HttpCode(204)
   delete(@Param('id') id:string) {
-    if (!isValidId(id)) {
-      return 'User id is invalid';
-    } 
     return this.userService.delete(id);
   }
 }
