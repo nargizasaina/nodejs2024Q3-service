@@ -2,16 +2,17 @@ import { BadRequestException, Injectable, NotFoundException, ForbiddenException 
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdatePasswordDto } from './dtos/update-password.dto';
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
+import { User } from 'src/types/common';
 
 @Injectable()
 export class UserService {
-  private users = [];
+  private users: User[] = [];
 
-  findAll() {
+  findAll(): User[] {
     return this.users;
   }
 
-  findOne(id: string) {
+  findOne(id: string): User {
     if (!uuidValidate(id)) throw new BadRequestException('User id is invalid'); 
     
     const user = this.users.find(user => user.id === id);
@@ -19,7 +20,7 @@ export class UserService {
     return user;
   }
 
-  create(user: CreateUserDto) {
+  create(user: CreateUserDto): User {
     const newUser = {
       id: uuidv4(),
       login: user.login,
@@ -32,7 +33,7 @@ export class UserService {
     return newUser;
   }
 
-  update(id: string, updatedUser: UpdatePasswordDto) {
+  update(id: string, updatedUser: UpdatePasswordDto): User {
     if (!uuidValidate(id)) throw new BadRequestException('User id is invalid'); 
     const user = this.findOne(id);
     if (!user) throw new NotFoundException('User not found!');
