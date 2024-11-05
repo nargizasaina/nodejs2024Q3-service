@@ -1,10 +1,18 @@
 import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { Track } from 'src/types/common';
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
+import { CreateTrackDto } from './dtos/create-track.dto';
+import { ArtistService } from 'src/artist/artist.service';
+import { AlbumService } from 'src/album/album.service';
+import { UpdateTrackDto } from './dtos/update-track.dto';
 
 @Injectable()
 export class TrackService {
   private tracks: Track[] = [];
+  constructor (
+    private readonly artistService: ArtistService,
+    private readonly albumService: AlbumService
+  ) {}
 
   findAll(): Track[] {
     return this.tracks;
@@ -18,47 +26,66 @@ export class TrackService {
     return track;
   }
 
-//   create(Track: CreateTrackDto): Track {
-//     const newTrack = {
-//       id: uuidv4(),
-//       login: Track.login,
-//       password: Track.password,
-//       version: 1,
-//       createdAt: Date.now(),
-//       updatedAt: Date.now()
-//     };
-//     this.tracks.push(newTrack);
-//     return newTrack;
-//   }
+  create(track: CreateTrackDto): Track {
+    let artistId = null;
+    let albumId = null;
+    if (track.artistId) {
+      const artist = this.artistService.findOne(track.artistId);
+      artistId = artist.id;
+    }
+    if (track.albumId) {
+      const album = this.albumService.findOne(track.albumId);
+      albumId = album.id;
+    }
 
-//   update(id: string, updatedTrack: UpdatePasswordDto): Track {
-//     if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid'); 
-//     const Track = this.findOne(id);
-//     if (!Track) throw new NotFoundException('Track not found!');
+    const newTrack = {
+      id: uuidv4(),
+      name: track.name,
+      artistId: artistId,
+      albumId: albumId,
+      duration: track.duration
+    };
+    this.tracks.push(newTrack);
+    return newTrack;
+  }
 
-//     this.tracks = this.tracks.map(Track => {
-//       if (Track.id === id) {
-//         if (Track.password === updatedTrack.oldPassword) {
-//           const newVersion = Track.version + 1;
-//           return { 
-//             ...Track,
-//             version: newVersion, 
-//             password: updatedTrack.newPassword,
-//             updatedAt: Date.now() };
-//         } else {
-//           throw new ForbiddenException('Old password is wrong!');
-//         }
-//       }
-//       return Track;
-//     });
-//     return this.findOne(id);
-//   }
+  update(id: string, updatedTrack: UpdateTrackDto): Track {
+    if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid'); 
+    const track = this.findOne(id);
+    if (!track) throw new NotFoundException('Track not found!');
 
-//   delete(id: string) {
-//     if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid'); 
-//     const TrackToRemove = this.findOne(id);
-//     if (!TrackToRemove) throw new NotFoundException('Track not found!');
+    let artistId = null;
+    let albumId = null;
+    if (track.artistId) {
+      const artist = this.artistService.findOne(track.artistId);
+      artistId = artist.id;
+    }
+    if (track.albumId) {
+      const album = this.albumService.findOne(track.albumId);
+      albumId = album.id;
+    }
 
-//     this.tracks = this.tracks.filter(Track => Track.id !== TrackToRemove.id);
-//   }
+    this.tracks = this.tracks.map(track => {
+      if (track.id === id) {
+        return { 
+          ...track,
+          name: track.name,
+          artistId: artistId,
+          albumId: albumId,
+          duration: track.duration
+        };
+       
+      }
+      return track;
+    });
+    return this.findOne(id);
+  }
+
+  delete(id: string) {
+    if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid'); 
+    const trackToRemove = this.findOne(id);
+    if (!trackToRemove) throw new NotFoundException('Track not found!');
+
+    this.tracks = this.tracks.filter(track => track.id !== trackToRemove.id);
+  }
 }
