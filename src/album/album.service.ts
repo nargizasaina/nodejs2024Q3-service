@@ -2,13 +2,11 @@ import { BadRequestException, Injectable, NotFoundException, ForbiddenException 
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 import { Album } from 'src/types/common';
 import { CreateAlbumDto } from './dtos/create-album.dto';
-import { ArtistService } from 'src/artist/artist.service';
 import { UpdateAlbumDto } from './dtos/update-album.dto';
 
 @Injectable()
 export class AlbumService {
   private albums: Album[] = [];
-  constructor (private readonly artistService: ArtistService) {}
 
   findAll(): Album[] {
     return this.albums;
@@ -25,8 +23,8 @@ export class AlbumService {
   create(album: CreateAlbumDto): Album {
     let id = null;
     if (album.artistId) {
-      const artist = this.artistService.findOne(album.artistId);
-      id = artist.id;
+      // const artist = this.artistService.findOne(album.artistId);
+      id = album.artistId;
     }
     const newAlbum = {
       id: uuidv4(),

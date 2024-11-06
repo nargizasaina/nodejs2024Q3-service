@@ -1,18 +1,12 @@
-import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { Track } from 'src/types/common';
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 import { CreateTrackDto } from './dtos/create-track.dto';
-import { ArtistService } from 'src/artist/artist.service';
-import { AlbumService } from 'src/album/album.service';
 import { UpdateTrackDto } from './dtos/update-track.dto';
 
 @Injectable()
 export class TrackService {
   private tracks: Track[] = [];
-  constructor (
-    private readonly artistService: ArtistService,
-    private readonly albumService: AlbumService
-  ) {}
 
   findAll(): Track[] {
     return this.tracks;
@@ -30,12 +24,12 @@ export class TrackService {
     let artistId = null;
     let albumId = null;
     if (track.artistId) {
-      const artist = this.artistService.findOne(track.artistId);
-      artistId = artist.id;
+      // const artist = this.artistService.findOne(track.artistId);
+      artistId = track.artistId;
     }
     if (track.albumId) {
-      const album = this.albumService.findOne(track.albumId);
-      albumId = album.id;
+      // const album = this.albumService.findOne(track.albumId);
+      albumId = track.albumId;
     }
 
     const newTrack = {
@@ -56,23 +50,23 @@ export class TrackService {
 
     let artistId = null;
     let albumId = null;
-    if (track.artistId) {
-      const artist = this.artistService.findOne(track.artistId);
-      artistId = artist.id;
+    if (updatedTrack.artistId) {
+      // const artist = this.artistService.findOne(track.artistId);
+      artistId = updatedTrack.artistId;
     }
-    if (track.albumId) {
-      const album = this.albumService.findOne(track.albumId);
-      albumId = album.id;
+    if (updatedTrack.albumId) {
+      // const album = this.albumService.findOne(track.albumId);
+      albumId = updatedTrack.albumId;
     }
 
     this.tracks = this.tracks.map(track => {
       if (track.id === id) {
         return { 
           ...track,
-          name: track.name,
+          name: updatedTrack.name,
           artistId: artistId,
           albumId: albumId,
-          duration: track.duration
+          duration: updatedTrack.duration
         };
        
       }
