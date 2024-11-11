@@ -12,6 +12,7 @@ import { AlbumModule } from 'src/album/album.module';
     forwardRef(() => AlbumModule)
   ],
   controllers: [FavsController],
-  providers: [FavsService]
+  providers: [FavsService],
+  exports: [FavsService]
 })
 export class FavsModule {}

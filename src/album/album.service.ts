@@ -62,4 +62,13 @@ export class AlbumService {
 
     this.albums = this.albums.filter(album => album.id !== albumToRemove.id);
   }
+
+  removeArtistReference(artistId: string): void {
+    this.albums = this.albums.map(album => {
+      if (album.artistId === artistId) {
+        return { ...album, artistId: null };
+      }
+      return album;
+    });
+  }
 }

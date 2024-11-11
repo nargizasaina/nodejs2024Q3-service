@@ -2,25 +2,31 @@ import { BadRequestException, Injectable, NotFoundException, ForbiddenException 
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdatePasswordDto } from './dtos/update-password.dto';
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
-import { User } from 'src/types/common';
+import { User, UserWithoutPassword } from 'src/types/common';
 
 @Injectable()
 export class UserService {
   private users: User[] = [];
 
-  findAll(): User[] {
-    return this.users;
+  findAll(): UserWithoutPassword[] {
+    const usersWithoutPassword = this.users.map(user => {
+      const {password, ...userWithoutPassword} = user;
+      return userWithoutPassword;
+    });
+
+    return usersWithoutPassword;
   }
 
-  findOne(id: string): User {
+  findOne(id: string): UserWithoutPassword {
     if (!uuidValidate(id)) throw new BadRequestException('User id is invalid'); 
     
     const user = this.users.find(user => user.id === id);
     if (!user) throw new NotFoundException('User not found!');
-    return user;
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
-  create(user: CreateUserDto): User {
+  create(user: CreateUserDto): UserWithoutPassword {
     const newUser = {
       id: uuidv4(),
       login: user.login,
@@ -30,10 +36,11 @@ export class UserService {
       updatedAt: Date.now()
     };
     this.users.push(newUser);
-    return newUser;
+    const { password, ...userWithoutPassword } = newUser;
+    return userWithoutPassword;
   }
 
-  update(id: string, updatedUser: UpdatePasswordDto): User {
+  update(id: string, updatedUser: UpdatePasswordDto): UserWithoutPassword {
     if (!uuidValidate(id)) throw new BadRequestException('User id is invalid'); 
     const user = this.findOne(id);
     if (!user) throw new NotFoundException('User not found!');
@@ -53,7 +60,9 @@ export class UserService {
       }
       return user;
     });
-    return this.findOne(id);
+    const updated = this.findOne(id) as User;
+    const { password, ...userWithoutPassword } = updated;
+    return userWithoutPassword;
   }
 
   delete(id: string) {

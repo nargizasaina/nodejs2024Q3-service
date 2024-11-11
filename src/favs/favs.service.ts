@@ -14,12 +14,16 @@ export class FavsService {
     @Inject(forwardRef(() => AlbumService)) private readonly albumService: AlbumService,
   ) {}
 
-  findAll(): FavoritesResponse {
-    return {
-      artists: this.favorites.artists.map(id => this.artistService.findOne(id)),
-      albums: this.favorites.albums.map(id => this.albumService.findOne(id)),
-      tracks: this.favorites.tracks.map(id => this.trackService.findOne(id)),
+  async findAll(): Promise<FavoritesResponse> {
+    const response = {
+      artists: this.favorites.artists.length ? 
+      this.favorites.artists.map(id => this.artistService.findOne(id)) : [],
+      albums: this.favorites.albums.length ?
+      this.favorites.albums.map(id => this.albumService.findOne(id)) : [],
+      tracks: this.favorites.tracks.length ?
+      this.favorites.tracks.map(id => this.trackService.findOne(id)) : [],
     };
+    return  response;
   }
 
   addTrack(id: string) {

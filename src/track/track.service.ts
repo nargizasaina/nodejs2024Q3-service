@@ -82,4 +82,22 @@ export class TrackService {
 
     this.tracks = this.tracks.filter(track => track.id !== trackToRemove.id);
   }
+
+  removeArtistReference(artistId: string): void {
+    this.tracks = this.tracks.map(track => {
+      if (track.artistId === artistId) {
+        return { ...track, artistId: null };
+      }
+      return track;
+    });
+  }
+
+  removeAlbumReference(albumId: string): void {
+    this.tracks = this.tracks.map(track => {
+      if (track.albumId === albumId) {
+        return { ...track, albumId: null };
+      }
+      return track;
+    });
+  }
 }
