@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdatePasswordDto } from './dtos/update-password.dto';
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
-import { User, UserWithoutPassword } from 'src/types/common';
+import { validate as uuidValidate } from 'uuid';
+import { UserWithoutPassword } from 'src/types/common';
 import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
