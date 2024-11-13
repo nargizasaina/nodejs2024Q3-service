@@ -1,74 +1,55 @@
-import { BadRequestException, Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
-import { Album } from 'src/types/common';
-import { CreateAlbumDto } from './dtos/create-album.dto';
-import { UpdateAlbumDto } from './dtos/update-album.dto';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { validate as uuidValidate } from 'uuid';
+import { DatabaseService } from 'src/database/database.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AlbumService {
-  private albums: Album[] = [];
+  constructor (private readonly databaseService: DatabaseService) {}
 
-  findAll(): Album[] {
-    return this.albums;
+  async findAll() {
+    return this.databaseService.album.findMany();
   }
 
-  findOne(id: string): Album {
+  async findOne(id: string) {
     if (!uuidValidate(id)) throw new BadRequestException('Album id is invalid'); 
     
-    const album = this.albums.find(album => album.id === id);
+    const album = await this.databaseService.album.findUnique({where: {id}});
     if (!album) throw new NotFoundException('Album not found!');
     return album;
   }
 
-  create(album: CreateAlbumDto): Album {
-    let id = null;
-    if (album.artistId) {
-      // const artist = this.artistService.findOne(album.artistId);
-      id = album.artistId;
-    }
-    const newAlbum = {
-      id: uuidv4(),
-      name: album.name,
-      year: album.year,
-      artistId: id
-    };
-    this.albums.push(newAlbum);
-    return newAlbum;
+  async create(album: Prisma.AlbumCreateInput) {
+    return this.databaseService.album.create({
+      data: album
+    });
   }
 
-  update(id: string, updatedAlbum: UpdateAlbumDto): Album {
+  async update(id: string, updatedAlbum: Prisma.AlbumUpdateInput) {
     if (!uuidValidate(id)) throw new BadRequestException('Album id is invalid'); 
-    const album = this.findOne(id);
+    const album = await this.databaseService.album.findUnique({where: {id}});
     if (!album) throw new NotFoundException('Album not found!');
 
-    this.albums = this.albums.map(album => {
-      if (album.id === id) {
-        return { 
-          ...album,
-          name: updatedAlbum.name, 
-          year: updatedAlbum.year,
-          artistId: updatedAlbum.artistId
-        } 
-      }
-      return album;
+    return this.databaseService.album.update({
+      where: {id},
+      data: updatedAlbum
     });
-    return this.findOne(id);
   }
 
-  delete(id: string) {
+  async delete(id: string) {
     if (!uuidValidate(id)) throw new BadRequestException('Album id is invalid'); 
-    const albumToRemove = this.findOne(id);
-    if (!albumToRemove) throw new NotFoundException('Album not found!');
+    const album = await this.databaseService.album.findUnique({where: {id}});
+    if (!album) throw new NotFoundException('Album not found!');
 
-    this.albums = this.albums.filter(album => album.id !== albumToRemove.id);
+    return this.databaseService.album.delete({where: {id}});
   }
 
-  removeArtistReference(artistId: string): void {
-    this.albums = this.albums.map(album => {
-      if (album.artistId === artistId) {
-        return { ...album, artistId: null };
-      }
-      return album;
-    });
-  }
+  // removeArtistReference(artistId: string): void {
+  //   this.albums = this.albums.map(album => {
+  //     if (album.artistId === artistId) {
+  //       return { ...album, artistId: null };
+  //     }
+  //     return album;
+  //   });
+  // }
 }

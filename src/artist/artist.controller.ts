@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, ValidationPipe } from '@nestjs/common';
 import { ArtistService } from './artist.service';
-import { UpdateArtistDto } from './dtos/update-artist.dto';
 import { Prisma } from '@prisma/client';
 
 @Controller('artist')
