@@ -19,6 +19,14 @@ export class AlbumService {
     return album;
   }
 
+  async findManyByIds(ids: string[]) {
+    return this.databaseService.artist.findMany({
+      where: {
+        id: { in: ids },
+      },
+    });
+  }
+
   async create(album: Prisma.AlbumCreateInput) {
     return this.databaseService.album.create({
       data: album

@@ -28,6 +28,14 @@ export class ArtistService {
     return artist;
   }
 
+  async findManyByIds(ids: string[]) {
+    return this.databaseService.artist.findMany({
+      where: {
+        id: { in: ids },
+      },
+    });
+  }
+
   async create(artist: Prisma.ArtistCreateInput) {
     return this.databaseService.artist.create({data: artist});
   }

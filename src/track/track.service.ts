@@ -19,6 +19,14 @@ export class TrackService {
     return track;
   }
 
+  async findManyByIds(ids: string[]) {
+    return this.databaseService.artist.findMany({
+      where: {
+        id: { in: ids },
+      },
+    });
+  }
+
   async create(track: Prisma.TrackCreateInput) {
     return this.databaseService.track.create({
       data: track
