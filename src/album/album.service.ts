@@ -5,7 +5,8 @@ import {
 } from '@nestjs/common';
 import { validate as uuidValidate } from 'uuid';
 import { DatabaseService } from 'src/database/database.service';
-import { Prisma } from '@prisma/client';
+import { CreateAlbumDto } from './dtos/create-album.dto';
+import { UpdateAlbumDto } from './dtos/update-album.dto';
 
 @Injectable()
 export class AlbumService {
@@ -33,13 +34,13 @@ export class AlbumService {
     });
   }
 
-  async create(album: Prisma.AlbumCreateInput) {
+  async create(album: CreateAlbumDto) {
     return this.databaseService.album.create({
       data: album,
     });
   }
 
-  async update(id: string, updatedAlbum: Prisma.AlbumUpdateInput) {
+  async update(id: string, updatedAlbum: UpdateAlbumDto) {
     if (!uuidValidate(id)) throw new BadRequestException('Album id is invalid');
     const album = await this.databaseService.album.findUnique({
       where: { id },

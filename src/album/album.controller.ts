@@ -10,7 +10,8 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
-import { Prisma } from '@prisma/client';
+import { CreateAlbumDto } from './dtos/create-album.dto';
+import { UpdateAlbumDto } from './dtos/update-album.dto';
 
 @Controller('album')
 export class AlbumController {
@@ -27,14 +28,14 @@ export class AlbumController {
   }
 
   @Post()
-  create(@Body(ValidationPipe) album: Prisma.AlbumCreateInput) {
+  create(@Body(ValidationPipe) album: CreateAlbumDto) {
     return this.albumService.create(album);
   }
 
   @Put(':id')
   update(
     @Param('id') id: string,
-    @Body(ValidationPipe) albumUpdate: Prisma.AlbumUpdateInput,
+    @Body(ValidationPipe) albumUpdate: UpdateAlbumDto,
   ) {
     return this.albumService.update(id, albumUpdate);
   }

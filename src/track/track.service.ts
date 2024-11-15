@@ -5,7 +5,8 @@ import {
 } from '@nestjs/common';
 import { validate as uuidValidate } from 'uuid';
 import { DatabaseService } from '../database/database.service';
-import { Prisma } from '@prisma/client';
+import { CreateTrackDto } from './dtos/create-track.dto';
+import { UpdateTrackDto } from './dtos/update-track.dto';
 
 @Injectable()
 export class TrackService {
@@ -33,13 +34,13 @@ export class TrackService {
     });
   }
 
-  async create(track: Prisma.TrackCreateInput) {
+  async create(track: CreateTrackDto) {
     return this.databaseService.track.create({
       data: track,
     });
   }
 
-  async update(id: string, updatedTrack: Prisma.TrackUpdateInput) {
+  async update(id: string, updatedTrack: UpdateTrackDto) {
     if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid');
     const track = await this.databaseService.track.findUnique({
       where: { id },

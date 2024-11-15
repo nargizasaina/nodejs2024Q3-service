@@ -10,7 +10,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
-import { Prisma } from '@prisma/client';
+import { CreateArtistDto } from './dtos/create-artist.dto';
+import { UpdateArtistDto } from './dtos/update-artist.dto';
 
 @Controller('artist')
 export class ArtistController {
@@ -27,14 +28,14 @@ export class ArtistController {
   }
 
   @Post()
-  create(@Body(ValidationPipe) artist: Prisma.ArtistCreateInput) {
+  create(@Body(ValidationPipe) artist: CreateArtistDto) {
     return this.artistService.create(artist);
   }
 
   @Put(':id')
   update(
     @Param('id') id: string,
-    @Body(ValidationPipe) artistUpdate: Prisma.ArtistUpdateInput,
+    @Body(ValidationPipe) artistUpdate: UpdateArtistDto,
   ) {
     return this.artistService.update(id, artistUpdate);
   }

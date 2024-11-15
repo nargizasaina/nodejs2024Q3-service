@@ -11,7 +11,8 @@ import { FavsService } from 'src/favs/favs.service';
 import { AlbumService } from 'src/album/album.service';
 import { TrackService } from 'src/track/track.service';
 import { DatabaseService } from 'src/database/database.service';
-import { Prisma } from '@prisma/client';
+import { CreateArtistDto } from './dtos/create-artist.dto';
+import { UpdateArtistDto } from './dtos/update-artist.dto';
 
 @Injectable()
 export class ArtistService {
@@ -48,11 +49,11 @@ export class ArtistService {
     });
   }
 
-  async create(artist: Prisma.ArtistCreateInput) {
+  async create(artist: CreateArtistDto) {
     return this.databaseService.artist.create({ data: artist });
   }
 
-  async update(id: string, updatedArtist: Prisma.ArtistUpdateInput) {
+  async update(id: string, updatedArtist: UpdateArtistDto) {
     if (!uuidValidate(id))
       throw new BadRequestException('Artist id is invalid');
     const artist = await this.databaseService.artist.findUnique({

@@ -10,7 +10,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
-import { Prisma } from '@prisma/client';
+import { CreateTrackDto } from './dtos/create-track.dto';
+import { UpdateTrackDto } from './dtos/update-track.dto';
 
 @Controller('track')
 export class TrackController {
@@ -27,14 +28,14 @@ export class TrackController {
   }
 
   @Post()
-  create(@Body(ValidationPipe) track: Prisma.TrackCreateInput) {
+  create(@Body(ValidationPipe) track: CreateTrackDto) {
     return this.trackService.create(track);
   }
 
   @Put(':id')
   update(
     @Param('id') id: string,
-    @Body(ValidationPipe) trackUpdate: Prisma.TrackUpdateInput,
+    @Body(ValidationPipe) trackUpdate: UpdateTrackDto,
   ) {
     return this.trackService.update(id, trackUpdate);
   }
