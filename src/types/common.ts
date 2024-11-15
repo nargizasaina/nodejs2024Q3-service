@@ -40,4 +40,4 @@ export type FavoritesResponse = {
   artists: Artist[]; // favorite artists ids
   albums: Album[]; // favorite albums ids
   tracks: Track[]; // favorite tracks ids
-}
+};

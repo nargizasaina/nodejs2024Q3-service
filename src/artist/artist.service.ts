@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { Artist } from 'src/types/common';
 import { validate as uuidValidate } from 'uuid';
 import { FavsService } from 'src/favs/favs.service';
@@ -11,9 +17,12 @@ import { Prisma } from '@prisma/client';
 export class ArtistService {
   constructor(
     private readonly databaseService: DatabaseService,
-    @Inject(forwardRef(() => FavsService)) private readonly favsService: FavsService,
-    @Inject(forwardRef(() => AlbumService)) private readonly albumService: AlbumService,
-    @Inject(forwardRef(() => TrackService)) private readonly trackService: TrackService
+    @Inject(forwardRef(() => FavsService))
+    private readonly favsService: FavsService,
+    @Inject(forwardRef(() => AlbumService))
+    private readonly albumService: AlbumService,
+    @Inject(forwardRef(() => TrackService))
+    private readonly trackService: TrackService,
   ) {}
 
   async findAll(): Promise<Artist[]> {
@@ -21,9 +30,12 @@ export class ArtistService {
   }
 
   async findOne(id: string) {
-    if (!uuidValidate(id)) throw new BadRequestException('Artist id is invalid'); 
-    
-    const artist = await this.databaseService.artist.findUnique({where: {id}});
+    if (!uuidValidate(id))
+      throw new BadRequestException('Artist id is invalid');
+
+    const artist = await this.databaseService.artist.findUnique({
+      where: { id },
+    });
     if (!artist) throw new NotFoundException('Artist not found!');
     return artist;
   }
@@ -37,26 +49,32 @@ export class ArtistService {
   }
 
   async create(artist: Prisma.ArtistCreateInput) {
-    return this.databaseService.artist.create({data: artist});
+    return this.databaseService.artist.create({ data: artist });
   }
 
   async update(id: string, updatedArtist: Prisma.ArtistUpdateInput) {
-    if (!uuidValidate(id)) throw new BadRequestException('Artist id is invalid'); 
-    const artist = await this.databaseService.artist.findUnique({where: {id}});
+    if (!uuidValidate(id))
+      throw new BadRequestException('Artist id is invalid');
+    const artist = await this.databaseService.artist.findUnique({
+      where: { id },
+    });
     if (!artist) throw new NotFoundException('Artist not found!');
 
     return this.databaseService.artist.update({
       where: { id },
-      data: updatedArtist
+      data: updatedArtist,
     });
   }
 
   async delete(id: string) {
-    if (!uuidValidate(id)) throw new BadRequestException('Artist id is invalid'); 
-    const artist = await this.databaseService.artist.findUnique({where: {id}});
+    if (!uuidValidate(id))
+      throw new BadRequestException('Artist id is invalid');
+    const artist = await this.databaseService.artist.findUnique({
+      where: { id },
+    });
     if (!artist) throw new NotFoundException('Artist not found!');
 
-    await this.databaseService.artist.delete({where: {id}});
+    await this.databaseService.artist.delete({ where: { id } });
 
     // this.favsService.deleteArtist(id);
     // this.albumService.removeArtistReference(id);

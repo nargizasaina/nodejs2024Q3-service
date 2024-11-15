@@ -7,7 +7,7 @@
 
 //   @IsNumber()
 //   @IsNotEmpty()
-//   @Min(1900) 
+//   @Min(1900)
 //   @Max(new Date().getFullYear())
 //   year: number;
 

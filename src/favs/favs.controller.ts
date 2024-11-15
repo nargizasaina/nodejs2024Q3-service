@@ -6,7 +6,7 @@ export class FavsController {
   constructor(private readonly favsService: FavsService) {}
 
   @Get()
-  findAll(){
+  findAll() {
     return this.favsService.findAll();
   }
 

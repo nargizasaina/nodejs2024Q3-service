@@ -1,20 +1,26 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { validate as uuidValidate } from 'uuid';
 import { DatabaseService } from '../database/database.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TrackService {
-  constructor (private readonly databaseService: DatabaseService) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 
   async findAll() {
     return this.databaseService.track.findMany();
   }
 
-  async findOne(id: string){
-    if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid'); 
-    
-    const track = await this.databaseService.track.findUnique({where: {id}});
+  async findOne(id: string) {
+    if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid');
+
+    const track = await this.databaseService.track.findUnique({
+      where: { id },
+    });
     if (!track) throw new NotFoundException('Track not found!');
     return track;
   }
@@ -29,27 +35,31 @@ export class TrackService {
 
   async create(track: Prisma.TrackCreateInput) {
     return this.databaseService.track.create({
-      data: track
+      data: track,
     });
   }
 
   async update(id: string, updatedTrack: Prisma.TrackUpdateInput) {
-    if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid'); 
-    const track = await this.databaseService.track.findUnique({where: {id}});
+    if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid');
+    const track = await this.databaseService.track.findUnique({
+      where: { id },
+    });
     if (!track) throw new NotFoundException('Track not found!');
 
     return this.databaseService.track.update({
-      where: {id},
-      data: updatedTrack
+      where: { id },
+      data: updatedTrack,
     });
   }
 
   async delete(id: string) {
-    if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid'); 
-    const trackToRemove = await this.databaseService.track.findUnique({where: {id}});
+    if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid');
+    const trackToRemove = await this.databaseService.track.findUnique({
+      where: { id },
+    });
     if (!trackToRemove) throw new NotFoundException('Track not found!');
 
-    return this.databaseService.track.delete({where: {id}});
+    return this.databaseService.track.delete({ where: { id } });
   }
 
   // removeArtistReference(artistId: string): void {

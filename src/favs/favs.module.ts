@@ -11,10 +11,10 @@ import { DatabaseModule } from 'src/database/database.module';
     DatabaseModule,
     forwardRef(() => TrackModule),
     forwardRef(() => ArtistModule),
-    forwardRef(() => AlbumModule)
+    forwardRef(() => AlbumModule),
   ],
   controllers: [FavsController],
   providers: [FavsService],
-  exports: [FavsService]
+  exports: [FavsService],
 })
 export class FavsModule {}
