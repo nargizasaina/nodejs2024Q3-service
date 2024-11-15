@@ -2,7 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  ForbiddenException,
+  ForbiddenException, InternalServerErrorException
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdatePasswordDto } from './dtos/update-password.dto';
@@ -51,7 +51,6 @@ export class UserService {
   }
 
   async create(user: CreateUserDto): Promise<UserWithoutPassword> {
-    console.log('databaseService', user);
     if (!user.login || !user.password) {
       throw new Error('Login and password are required');
     }
@@ -64,7 +63,8 @@ export class UserService {
       },
     });
     const { password, ...userWithoutPassword } = newUser;
-    return json(userWithoutPassword);
+
+    return JSON.parse(json(userWithoutPassword));
   }
 
   async update(
@@ -88,19 +88,18 @@ export class UserService {
         updatedAt: Date.now(),
       },
     });
-    const { password, createdAt, updatedAt, ...userWithoutPassword } = updated;
-    return json({
+    const { password, updatedAt, ...userWithoutPassword } = updated;
+    return JSON.parse(json({
       ...userWithoutPassword,
-      createdAt: createdAt ? Number(createdAt) : null,
-      updatedAt: updatedAt ? Number(updatedAt) : null,
-    });
+      createdAt:Number(user.createdAt),
+      updatedAt: updated.updatedAt ? Number(updated.updatedAt) : null,
+    }));
   }
 
   async delete(id: string) {
     if (!uuidValidate(id)) throw new BadRequestException('User id is invalid');
     const user = await this.databaseService.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('User not found!');
-
-    return this.databaseService.user.delete({ where: { id } });
+    await this.databaseService.user.delete({ where: { id } });
   }
 }

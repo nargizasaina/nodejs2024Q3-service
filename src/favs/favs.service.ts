@@ -26,32 +26,47 @@ export class FavsService {
 
   async findAll() {
     const favorites = await this.databaseService.favorites.findFirst();
-    const artists = await this.artistService.findManyByIds(favorites.artists);
-    const albums = await this.albumService.findManyByIds(favorites.albums);
-    const tracks = await this.trackService.findManyByIds(favorites.albums);
+    if (!favorites) {
+      return { artists: [], albums: [], tracks: [] };
+    }
+    const artists = await this.artistService.findManyByIds(favorites.artists || []);
+    const albums = await this.albumService.findManyByIds(favorites.albums || []);
+    const tracks = await this.trackService.findManyByIds(favorites.tracks || []);
     return { artists, albums, tracks };
   }
 
   async addTrack(id: string) {
     if (!uuidValidate(id)) throw new BadRequestException('Track id is invalid');
 
-    const track = await this.trackService.findOne(id);
-    if (!track) throw new UnprocessableEntityException('Track not found!');
+    let track = null;
+    try {
+      track = await this.trackService.findOne(id);
+    } catch {
+      throw new UnprocessableEntityException('Track not found!');
+    }
 
     const favorites = await this.databaseService.favorites.findFirst();
-
-    await this.databaseService.favorites.upsert({
-      where: { id: favorites.id },
-      update: {
-        tracks: { push: track.id },
-      },
-      create: {
-        tracks: [track.id],
-        artists: [],
-        albums: [],
-      },
-    });
-
+    if (!favorites) {
+      await this.databaseService.favorites.create({
+        data: {
+          tracks: [id],
+          albums: [],
+          artists: []
+        }
+      })
+    } else {
+      await this.databaseService.favorites.upsert({
+        where: { id: favorites.id },
+        update: {
+          tracks: { push: track.id },
+        },
+        create: {
+          tracks: [track.id],
+          artists: [],
+          albums: [],
+        },
+      });
+    }
     return { message: 'Track is added to favorites' };
   }
 
@@ -74,22 +89,36 @@ export class FavsService {
   async addArtist(id: string) {
     if (!uuidValidate(id))
       throw new BadRequestException('Artist id is invalid');
-
-    const artist = await this.artistService.findOne(id);
-    if (!artist) throw new UnprocessableEntityException('Artist not found!');
+    
+    let artist = null;
+    try {
+      artist = await this.artistService.findOne(id);
+    } catch {
+      throw new UnprocessableEntityException('Artist not found!');
+    } 
 
     const favorites = await this.databaseService.favorites.findFirst();
-    await this.databaseService.favorites.upsert({
-      where: { id: favorites.id },
-      update: {
-        artists: { push: artist.id },
-      },
-      create: {
-        tracks: [],
-        artists: [artist.id],
-        albums: [],
-      },
-    });
+    if (!favorites) {
+      await this.databaseService.favorites.create({
+        data: {
+          tracks: [],
+          albums: [],
+          artists: [id]
+        }
+      })
+    } else {
+      await this.databaseService.favorites.upsert({
+        where: { id: favorites.id },
+        update: {
+          artists: { push: artist.id },
+        },
+        create: {
+          tracks: [],
+          artists: [artist.id],
+          albums: [],
+        },
+      });
+    }
 
     return { message: 'Artist is added to favorites' };
   }
@@ -117,22 +146,35 @@ export class FavsService {
   async addAlbum(id: string) {
     if (!uuidValidate(id)) throw new BadRequestException('Album id is invalid');
 
-    const album = await this.albumService.findOne(id);
-    if (!album) throw new UnprocessableEntityException('Album not found!');
+    let album = null;
+    try{ 
+      album = await this.albumService.findOne(id);
+    } catch {
+      throw new UnprocessableEntityException('Album not found!');
+    } 
 
     const favorites = await this.databaseService.favorites.findFirst();
-    await this.databaseService.favorites.upsert({
-      where: { id: favorites.id },
-      update: {
-        albums: { push: album.id },
-      },
-      create: {
-        tracks: [],
-        artists: [],
-        albums: [album.id],
-      },
-    });
-
+    if (!favorites) {
+      await this.databaseService.favorites.create({
+        data: {
+          tracks: [],
+          albums: [id],
+          artists: []
+        }
+      })
+    } else {
+       await this.databaseService.favorites.upsert({
+        where: { id: favorites.id },
+        update: {
+          albums: { push: album.id },
+        },
+        create: {
+          tracks: [],
+          artists: [],
+          albums: [album.id],
+        },
+      });
+    }
     return { message: 'Album is added to favorites' };
   }
 

@@ -42,6 +42,7 @@ export class ArtistService {
   }
 
   async findManyByIds(ids: string[]) {
+    if (ids.length === 0) return [];
     return this.databaseService.artist.findMany({
       where: {
         id: { in: ids },

@@ -27,7 +27,8 @@ export class AlbumService {
   }
 
   async findManyByIds(ids: string[]) {
-    return this.databaseService.artist.findMany({
+    if (ids.length === 0) return [];
+    return this.databaseService.album.findMany({
       where: {
         id: { in: ids },
       },
