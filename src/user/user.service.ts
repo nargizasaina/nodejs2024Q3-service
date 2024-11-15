@@ -2,7 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  ForbiddenException, InternalServerErrorException
+  ForbiddenException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdatePasswordDto } from './dtos/update-password.dto';
@@ -89,11 +89,13 @@ export class UserService {
       },
     });
     const { password, updatedAt, ...userWithoutPassword } = updated;
-    return JSON.parse(json({
-      ...userWithoutPassword,
-      createdAt:Number(user.createdAt),
-      updatedAt: updated.updatedAt ? Number(updated.updatedAt) : null,
-    }));
+    return JSON.parse(
+      json({
+        ...userWithoutPassword,
+        createdAt: Number(user.createdAt),
+        updatedAt: updatedAt ? Number(updatedAt) : null,
+      }),
+    );
   }
 
   async delete(id: string) {
