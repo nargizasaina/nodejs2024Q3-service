@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional, Min, Max } from "class-validator";
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  Min,
+  Max,
+} from 'class-validator';
 
 export class CreateAlbumDto {
   @IsString()
@@ -7,7 +14,7 @@ export class CreateAlbumDto {
 
   @IsNumber()
   @IsNotEmpty()
-  @Min(1900) 
+  @Min(1900)
   @Max(new Date().getFullYear())
   year: number;
 

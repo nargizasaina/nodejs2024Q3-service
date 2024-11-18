@@ -1,19 +1,29 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, ValidationPipe, HttpCode } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  ValidationPipe,
+  HttpCode,
+} from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dtos/create-album.dto';
 import { UpdateAlbumDto } from './dtos/update-album.dto';
 
 @Controller('album')
 export class AlbumController {
-  constructor (private readonly albumService: AlbumService) {}
+  constructor(private readonly albumService: AlbumService) {}
 
-  @Get() 
+  @Get()
   findAll() {
     return this.albumService.findAll();
   }
 
-  @Get(':id') 
-  findOne(@Param('id') id:string) {
+  @Get(':id')
+  findOne(@Param('id') id: string) {
     return this.albumService.findOne(id);
   }
 
@@ -22,14 +32,17 @@ export class AlbumController {
     return this.albumService.create(album);
   }
 
-  @Put(':id') 
-  update(@Param('id') id:string, @Body(ValidationPipe) albumUpdate: UpdateAlbumDto) {
-    return this.albumService.update( id, albumUpdate );
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body(ValidationPipe) albumUpdate: UpdateAlbumDto,
+  ) {
+    return this.albumService.update(id, albumUpdate);
   }
 
-  @Delete(':id') 
+  @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id') id:string) {
+  delete(@Param('id') id: string) {
     return this.albumService.delete(id);
   }
 }

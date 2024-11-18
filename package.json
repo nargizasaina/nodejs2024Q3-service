@@ -19,6 +19,7 @@
     "test:refresh": "cross-env TEST_MODE=auth jest --testPathPattern refresh.e2e.spec.ts --noStackTrace --runInBand",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
+    "test:single": "jest --noStackTrace --runInBand --testPathPattern",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
@@ -28,11 +29,14 @@
     "@nestjs/mapped-types": "^1.0.1",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/swagger": "^8.0.3",
+    "@prisma/client": "^5.22.0",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "dotenv": "^16.0.1",
     "http-status-codes": "^2.2.0",
+    "pg": "^8.13.1",
+    "prisma": "^5.22.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",

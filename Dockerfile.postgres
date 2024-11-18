@@ -1,0 +1,12 @@
+FROM postgres:15-alpine
+
+# Установка точки монтирования для данных
+VOLUME ["/var/lib/postgresql/data"]
+
+# Указание переменной окружения
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=password
+ENV POSTGRES_DB=mydb
+
+# Экспонирование порта базы данных
+EXPOSE 5432
